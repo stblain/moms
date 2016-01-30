@@ -1,0 +1,4 @@
+---
+- name: "dnsmasq"
+  include: dnsmasq.yml
+  tags: dnsmasq

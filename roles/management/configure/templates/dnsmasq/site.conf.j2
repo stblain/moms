@@ -1,0 +1,4 @@
+dhcp-range={{ dhcp.range }}
+{% if dhcp.router is defined %}
+dhcp-option=option:router,{{ dhcp.router }}
+{% endif %}

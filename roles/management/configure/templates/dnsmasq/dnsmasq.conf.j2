@@ -96,7 +96,7 @@
 #except-interface=
 # Or which to listen on by address (remember to include 127.0.0.1 if
 # you use this.)
-#listen-address=
+listen-address={{ moms_management_ip }}
 # If you want dnsmasq to provide only DNS service on an interface,
 # configure it as shown above, and then use the following line to
 # disable DHCP and TFTP on it.
@@ -412,7 +412,7 @@
 # this is you want to boot machines over the network and you will need
 # a TFTP server; either dnsmasq's built in TFTP server or an
 # external one. (See below for how to enable the TFTP server.)
-#dhcp-boot=pxelinux.0
+dhcp-boot=pxelinux.0
 
 # The same as above, but use custom tftp-server instead machine running dnsmasq
 #dhcp-boot=pxelinux,server.name,192.168.1.100
@@ -469,10 +469,10 @@
 
 
 # Enable dnsmasq's built-in TFTP server
-#enable-tftp
+enable-tftp
 
 # Set the root directory for files available via FTP.
-#tftp-root=/var/ftpd
+tftp-root=/var/dnsmasq
 
 # Make the TFTP server more secure: with this set, only files owned by
 # the user dnsmasq is running as will be send over the net.
@@ -627,4 +627,4 @@
 
 # Include another lot of configuration options.
 #conf-file=/etc/dnsmasq.more.conf
-#conf-dir=/etc/dnsmasq.d
+conf-dir=/etc/dnsmasq.d
