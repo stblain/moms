@@ -48,33 +48,40 @@
     state: "directory"
 
 - name: "dnsmasq : Configure /var/dnsmasq/pxelinux.cfg/default"
-  copy:
-    src: "dnsmasq/pxelinux/default"
+  template:
+    src: "dnsmasq/pxelinux.cfg.j2"
     dest: "/var/dnsmasq/pxelinux.cfg/default"
     owner: "root"
     group: "root"
     mode: "0644"
 
-- name: "dnsmasq : Upload /var/dnsmasq/pxelinux.0"
+- name: "dnsmasq : Upload PXELINUX binaries"
   copy:
-    src: "dnsmasq/pxelinux/pxelinux.0"
-    dest: "/var/dnsmasq/pxelinux.0"
+    src: "dnsmasq/pxelinux/{{ item }}"
+    dest: "/var/dnsmasq/{{ item }}"
     owner: "root"
     group: "root"
     mode: "0644"
+  with_items:
+    - initrd.gz
+    - linux
+    - pxelinux.0
 
-- name: "dnsmasq : Upload /var/dnsmasq/linux"
-  copy:
-    src: "dnsmasq/pxelinux/linux"
-    dest: "/var/dnsmasq/linux"
+#
+# Auto install (preseed)
+#
+- name: "dnsmasq : Create directory /var/dnsmasq/preseed"
+  file:
+    dest: "/var/dnsmasq/preseed"
     owner: "root"
     group: "root"
-    mode: "0644"
+    mode: "0755"
+    state: "directory"
 
-- name: "dnsmasq : Upload /var/dnsmasq/initrd.gz"
-  copy:
-    src: "dnsmasq/pxelinux/initrd.gz"
-    dest: "/var/dnsmasq/initrd.gz"
+- name: "dnsmasq : Configure /var/dnsmasq/preseed/default.seed"
+  template:
+    src: "dnsmasq/default.seed.j2"
+    dest: "/var/dnsmasq/preseed/default.seed"
     owner: "root"
     group: "root"
     mode: "0644"
