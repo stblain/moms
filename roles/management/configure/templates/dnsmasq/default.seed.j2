@@ -62,4 +62,7 @@ d-i grub-installer/timeout string 2
 d-i finish-install/reboot_in_progress note
 
 ### Other
-d-i live-installer/net-image string http://192.0.2.201/install/filesystem.squashfs
+d-i live-installer/net-image string http://{{ moms_management_ip }}/install/filesystem.squashfs
+
+# Start ssh on boot
+d-i preseed/late_command string in-target update-rc.d ssh enable
