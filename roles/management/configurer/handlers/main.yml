@@ -1,0 +1,14 @@
+---
+- name: "dnsmasq : Restart"
+  service:
+    name: "{{ item }}"
+    state: "restarted"
+  with_items:
+    - dnsmasq
+
+- name: "nginx : Restart"
+  service:
+    name: "{{ item }}"
+    state: "restarted"
+  with_items:
+    - nginx

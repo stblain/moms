@@ -1,6 +1,0 @@
-default install
-label install
-        kernel linux
-        append initrd=initrd.gz auto-install/enable=true debconf/priority=critical preseed/url=tftp://{{ moms_management_ip }}/preseed/default.seed
-prompt 0
-timeout 0

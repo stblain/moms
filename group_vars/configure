@@ -1,8 +1,0 @@
-sites:
-  - name: site-A
-    dhcp:
-      range: 192.0.2.210,192.0.2.240,12h
-      router: 192.0.2.1
-  - name: site-B
-    dhcp:
-      range: 172.16.1.100,172.16.1.150,1h
