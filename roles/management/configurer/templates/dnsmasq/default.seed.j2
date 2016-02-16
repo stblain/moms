@@ -17,6 +17,7 @@ d-i clock-setup/ntp boolean false
 d-i partman-auto/method string regular
 d-i partman-auto/choose_recipe select atomic
 d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
 d-i partman/confirm_nooverwrite boolean true
 
 ### Base system installation
@@ -64,5 +65,9 @@ d-i finish-install/reboot_in_progress note
 ### Other
 d-i live-installer/net-image string http://{{ moms_management_ip }}/install/filesystem.squashfs
 
+### Post-install setup
 # Start ssh on boot
 d-i preseed/late_command string in-target update-rc.d ssh enable
+
+# Register with inventory
+d-i preseed/late_command string in-target --pass-stdout lshw -xml | nc {{ moms_management_ip }} 1234
