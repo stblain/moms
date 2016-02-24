@@ -1,0 +1,51 @@
+---
+- name: "pxelinux : Configure /etc/dnsmasq.d/<site>.conf"
+  vars:
+    dhcp: "{{ item.dhcp }}"
+  template:
+    src: "dnsmasq/site.conf.j2"
+    dest: "/etc/dnsmasq.d/{{ item.name }}.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items: "{{ sites }}"
+  notify: "dnsmasq : Restart"
+
+- name: "pxelinux : Create directories"
+  file:
+    dest: "{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+    state: "directory"
+  with_items:
+    - "/var/dnsmasq/pxelinux.cfg"
+    - "/var/dnsmasq/preseed"
+
+- name: "pxelinux : Configure /var/dnsmasq/pxelinux.cfg/default"
+  template:
+    src: "pxelinux/pxelinux.cfg.j2"
+    dest: "/var/dnsmasq/pxelinux.cfg/default"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+
+- name: "pxelinux : Upload PXELINUX binaries"
+  copy:
+    src: "pxelinux/{{ item }}"
+    dest: "/var/dnsmasq/{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  with_items:
+    - initrd.gz
+    - linux
+    - pxelinux.0
+
+- name: "pxelinux : Configure /var/dnsmasq/preseed/default.seed"
+  template:
+    src: "pxelinux/default.seed.j2"
+    dest: "/var/dnsmasq/preseed/default.seed"
+    owner: "root"
+    group: "root"
+    mode: "0644"

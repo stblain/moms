@@ -1,0 +1,7 @@
+---
+- name: "nginx : Restart"
+  service:
+    name: "{{ item }}"
+    state: "restarted"
+  with_items:
+    - nginx

@@ -5,7 +5,8 @@
     state: "latest"
   with_items:
     - nginx
-  notify: "nginx : Restart"
+  notify: "Restart"
+  tags: "nginx"
 
 - name: "nginx : Start at boot"
   service:
@@ -14,3 +15,4 @@
     enabled: yes
   with_items:
     - nginx
+  tags: "nginx"

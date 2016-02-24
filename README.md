@@ -12,7 +12,16 @@
     
     `http://proxy.company.com:80`
 
-| Name      | Required | Type   | Default | Example |
-| --------- | -------- | ------ | ------- | ------- |
-| apt_proxy | no       | String |         |         |
-| sites     |          |        |         |         |
+| Zabbix macro        | Ansible variable | Required | Type   | Default | Example |
+| ------------------- | ---------------- | -------- | ------ | ------- | ------- |
+| {$DHCP_RANGE}       | dhcp_range       | no       | String |         |         |
+| {$APT_PROXY}        | apt_proxy        | no       | String |         |         |
+| sites               |                  |        |         |         |
+
+
+## Roles
+
+| Role                  | Hostname    |
+| --------------------- | ----------- |
+| management/configurer | configsrv-# |
+| management/monitorer  | monitsrv-#  |

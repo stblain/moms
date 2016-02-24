@@ -1,0 +1,49 @@
+---
+- name: "Use the latest packages"
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+  with_items:
+      - dnsmasq
+  notify: "Restart dnsmasq"
+  tags: "dnsmasq"
+
+- name: "Configure /etc/default/dnsmasq"
+  template:
+    src: "default-dnsmasq.j2"
+    dest: "/etc/default/dnsmasq"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Restart dnsmasq"
+  tags: "dnsmasq"
+
+- name: "Configure /etc/dnsmasq.conf"
+  template:
+    src: "dnsmasq.conf.j2"
+    dest: "/etc/dnsmasq.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: "Restart dnsmasq"
+  tags: "dnsmasq"
+
+- name: "Create directories"
+  file:
+    dest: "{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+    state: "directory"
+  with_items:
+    - "/var/dnsmasq"
+  tags: "dnsmasq"
+
+- name: "Start at boot"
+  service:
+    name: "{{ item }}"
+    state: "started"
+    enabled: yes
+  with_items:
+    - "dnsmasq"
+  tags: "dnsmasq"

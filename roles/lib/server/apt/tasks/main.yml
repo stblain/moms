@@ -1,0 +1,24 @@
+---
+- name: "Configure /etc/apt/apt.conf"
+  template:
+    src: "apt.conf.j2"
+    dest: "/etc/apt/apt.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  tags: "apt"
+
+- name: "Update package list"
+  apt:
+    update_cache: yes
+  tags: "apt"
+
+- name: "Disable unattented upgrades"
+  apt:
+    name: {{ item }}
+    state: "absent"
+    purge: yes
+  with_items:
+    - unattended-upgrades
+    - update-notifier-common
+  tags: "apt"

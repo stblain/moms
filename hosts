@@ -1,13 +1,99 @@
-#
-# Roles groups
-#
-[configurer]
-cfgserver-1.mgmt.moms.vbox ansible_ssh_host=192.0.2.201 ansible_ssh_user=root ansible_ssh_pass=password123
+#! /usr/bin/env python
 
-[service-node]
-svcnode-1.site-A.moms.vbox ansible_ssh_host=192.0.2.200 ansible_ssh_user=root ansible_ssh_pass=password123
+# Standard library imports
+import json
+import sys
+
+# Related third party imports
+import requests
+
+# Constants
+ZABBIX_URL = "http://10.199.228.72/api_jsonrpc.php"
 
 
-#
-# Sites groups
-#
+def macro_to_var(macro):
+    var_name = macro['macro'].strip("{$}").lower()
+
+    return (var_name, macro['value'])
+
+def do_list():
+    inventory = {}
+
+    # Get the groups for each type
+    for pattern in ["Site - ", "Role - "]:
+        zabbix_response = requests.post(ZABBIX_URL, json={'jsonrpc': "2.0",
+                                                          'method': "hostgroup.get",
+                                                          'params': {'output': ["name"],
+                                                                     'search': {"name": pattern},
+                                                                     'startSearch': True,
+                                                                     'selectHosts': ['name', 'hostid'],
+                                                                     },
+                                                          'id': 0,
+                                                          'auth': zabbix_auth_token,
+                                                          },
+                                        )
+
+        # Populate every retrieved group
+        for group in zabbix_response.json()['result']:
+            ansible_group = {}
+
+            # Populate the hostnames
+            ansible_group['hosts'] = map(lambda x: x['name'], group['hosts'])
+
+            # Populate the variables
+            ansible_group['vars'] = {}
+            hostids = map(lambda x: x['hostid'], group['hosts'])
+            zabbix_response = requests.post(ZABBIX_URL, json={'jsonrpc': "2.0",
+                                                              'method': "template.get",
+                                                              'params': {'output': ["name"],
+                                                                         'search': {'name': "Configuration " + group['name']},
+                                                                         'selectMacros': ["macro", "value"],
+                                                                         },
+                                                              'id': 0,
+                                                              'auth': zabbix_auth_token,
+                                                              },
+                                            )
+            ansible_group['vars'].update(map(macro_to_var, zabbix_response.json()['result'][0]['macros']))
+
+            # Add the group to the inventory
+            inventory[group['name'].replace(pattern, "")] = ansible_group
+
+    # Print the inventory
+    print json.dumps(inventory, indent=4)
+
+def do_host(host):
+    variables = {}
+
+    # Retrieve the host info
+    zabbix_response = requests.post(ZABBIX_URL, json={'jsonrpc': "2.0",
+                                                          'method': "host.get",
+                                                          'params': {'output': ["hostid"],
+                                                                     'search': {"name": host},
+                                                                     'startSearch': True,
+                                                                     'selectMacros': ["macro", "value"],
+                                                                     },
+                                                          'id': 0,
+                                                          'auth': zabbix_auth_token,
+                                                          },
+                                        )
+    toto = zabbix_response.json()['result']
+    variables.update(map(macro_to_var, zabbix_response.json()['result'][0]['macros']))
+
+    # Print the variables
+    print json.dumps(variables, indent=4)
+
+# Get the authentification token
+zabbix_response = requests.post(ZABBIX_URL, json={"jsonrpc": "2.0",
+                                                  "method": "user.login",
+                                                  "params": {"user": "Admin",
+                                                             "password": "zabbix",
+                                                             },
+                                                  "id": 1,
+                                                  },
+                                )
+zabbix_auth_token = zabbix_response.json()['result']
+
+if sys.argv[1] == "--list":
+    do_list()
+elif sys.argv[1] == "--host":
+    do_host(sys.argv[2])

@@ -1,8 +1,4 @@
 ---
-- name: "dnsmasq"
-  include: dnsmasq.yml
-  tags: dnsmasq
-
-- name: "nginx"
-  include: nginx.yml
-  tags: nginx
+- name: "pxelinux"
+  include: pxelinux.yml
+  tags: pxelinux

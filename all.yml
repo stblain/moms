@@ -1,6 +1,5 @@
 ---
-- hosts: configurer
+- hosts: management.configurer
   gather_facts: yes
   roles:
-    - role: server/common
     - role: management/configurer
