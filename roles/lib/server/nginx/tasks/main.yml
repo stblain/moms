@@ -5,7 +5,7 @@
     state: "latest"
   with_items:
     - nginx
-  notify: "Restart"
+  notify: "Restart nginx"
   tags: "nginx"
 
 - name: "nginx : Start at boot"

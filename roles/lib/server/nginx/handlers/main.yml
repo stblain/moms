@@ -1,5 +1,5 @@
 ---
-- name: "nginx : Restart"
+- name: "Restart nginx"
   service:
     name: "{{ item }}"
     state: "restarted"

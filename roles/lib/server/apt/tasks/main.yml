@@ -15,7 +15,7 @@
 
 - name: "Disable unattented upgrades"
   apt:
-    name: {{ item }}
+    name: "{{ item }}"
     state: "absent"
     purge: yes
   with_items:
