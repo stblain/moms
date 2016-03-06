@@ -1,15 +1,16 @@
 ---
 - name: "pxelinux : Configure /etc/dnsmasq.d/<site>.conf"
   vars:
-    dhcp: "{{ item.dhcp }}"
+    dhcp_range: "{{ hostvars[groups[item][0]]['dhcp_range'] | default('') }}"
+    dhcp_option: "{{ hostvars[groups[item][0]]['dhcp_option'] | default('') }}"
   template:
-    src: "dnsmasq/site.conf.j2"
-    dest: "/etc/dnsmasq.d/{{ item.name }}.conf"
+    src: "pxelinux/site.conf.j2"
+    dest: "/etc/dnsmasq.d/{{ item }}.conf"
     owner: "root"
     group: "root"
     mode: "0644"
-  with_items: "{{ sites }}"
-  notify: "dnsmasq : Restart"
+  with_items: "{{ groups['all'] | map('extract', hostvars, 'site_name') | list | unique }}"
+  notify: "Restart dnsmasq"
 
 - name: "pxelinux : Create directories"
   file:

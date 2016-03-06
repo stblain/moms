@@ -3,7 +3,7 @@ d-i debian-installer/locale string en_CA
 
 ### Mirror settings
 d-i mirror/country string manual
-d-i mirror/http/hostname string {{ moms_management_ip }}
+d-i mirror/http/hostname string {{ ansible_host }}
 d-i mirror/http/directory string /ubuntu
 
 # Suite to install.
@@ -37,7 +37,7 @@ d-i apt-setup/universe boolean false
 d-i apt-setup/backports boolean false
 d-i apt-setup/multiverse boolean false
 d-i apt-setup/services-select-ubuntu multiselect none
-d-i apt-setup/security_host string {{ moms_management_ip }}
+d-i apt-setup/security_host string {{ ansible_host }}
 
 ### Package selection
 tasksel tasksel/first multiselect standard
@@ -63,11 +63,11 @@ d-i grub-installer/timeout string 2
 d-i finish-install/reboot_in_progress note
 
 ### Other
-d-i live-installer/net-image string http://{{ moms_management_ip }}/install/filesystem.squashfs
+d-i live-installer/net-image string http://{{ ansible_host }}/install/filesystem.squashfs
 
 ### Post-install setup
 # Start ssh on boot
 d-i preseed/late_command string in-target update-rc.d ssh enable
 
 # Register with inventory
-d-i preseed/late_command string in-target --pass-stdout lshw -xml | nc {{ moms_management_ip }} 1234
+d-i preseed/late_command string in-target --pass-stdout lshw -xml | nc {{ ansible_host }} 1234

@@ -1,9 +1,0 @@
-moms_management_ip: "{%- if ansible_ssh_host is defined -%}
-                         {%- if ansible_ssh_host | ipv4 -%}
-                             {{ ansible_ssh_host }}
-                         {%- else -%}
-                             {{ lookup('dig', ansible_ssh_host) }}
-                         {%- endif -%}
-                     {%- else -%}
-                         {{ lookup('dig', inventory_hostname) }}
-                     {%- endif -%}"

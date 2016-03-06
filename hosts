@@ -8,7 +8,9 @@ import sys
 import requests
 
 # Constants
-ZABBIX_URL = "http://10.199.228.72/api_jsonrpc.php"
+ZABBIX_URL = "http://192.0.2.202/zabbix/api_jsonrpc.php"
+ZABBIX_ROLE_PATTERN = "Role - "
+ZABBIX_SITE_PATTERN = "Site - "
 
 
 def macro_to_var(macro):
@@ -16,11 +18,12 @@ def macro_to_var(macro):
 
     return (var_name, macro['value'])
 
+
 def do_list():
     inventory = {}
 
     # Get the groups for each type
-    for pattern in ["Site - ", "Role - "]:
+    for pattern in [ZABBIX_ROLE_PATTERN, ZABBIX_SITE_PATTERN]:
         zabbix_response = requests.post(ZABBIX_URL, json={'jsonrpc': "2.0",
                                                           'method': "hostgroup.get",
                                                           'params': {'output': ["name"],
@@ -35,14 +38,14 @@ def do_list():
 
         # Populate every retrieved group
         for group in zabbix_response.json()['result']:
+            group_name = group['name'].replace(pattern, "")
             ansible_group = {}
 
             # Populate the hostnames
             ansible_group['hosts'] = map(lambda x: x['name'], group['hosts'])
 
             # Populate the variables
-            ansible_group['vars'] = {}
-            hostids = map(lambda x: x['hostid'], group['hosts'])
+            ansible_group['vars'] = {} if pattern != ZABBIX_SITE_PATTERN else {'site_name': group_name}
             zabbix_response = requests.post(ZABBIX_URL, json={'jsonrpc': "2.0",
                                                               'method': "template.get",
                                                               'params': {'output': ["name"],
@@ -56,10 +59,11 @@ def do_list():
             ansible_group['vars'].update(map(macro_to_var, zabbix_response.json()['result'][0]['macros']))
 
             # Add the group to the inventory
-            inventory[group['name'].replace(pattern, "")] = ansible_group
+            inventory[group_name] = ansible_group
 
     # Print the inventory
     print json.dumps(inventory, indent=4)
+
 
 def do_host(host):
     variables = {}
@@ -71,12 +75,14 @@ def do_host(host):
                                                                      'search': {"name": host},
                                                                      'startSearch': True,
                                                                      'selectMacros': ["macro", "value"],
+                                                                     'selectInterfaces': ["ip"],
                                                                      },
                                                           'id': 0,
                                                           'auth': zabbix_auth_token,
                                                           },
                                         )
-    toto = zabbix_response.json()['result']
+    result_json = zabbix_response.json()['result']
+    variables['ansible_host'] = result_json[0]['interfaces'][0]['ip']
     variables.update(map(macro_to_var, zabbix_response.json()['result'][0]['macros']))
 
     # Print the variables

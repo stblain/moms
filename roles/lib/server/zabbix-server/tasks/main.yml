@@ -1,0 +1,19 @@
+---
+- name: "Use the latest packages"
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+  with_items:
+    - zabbix-server-mysql
+    - zabbix-frontend-php
+  notify: "Restart zabbix-server"
+  tags: "zabbix-server"
+
+- name: "Start at boot"
+  service:
+    name: "{{ item }}"
+    state: "started"
+    enabled: yes
+  with_items:
+    - zabbix-server
+  tags: "zabbix-server"
