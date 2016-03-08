@@ -2,3 +2,7 @@
 - name: "pxelinux"
   include: pxelinux.yml
   tags: pxelinux
+
+- name: "apt-mirror"
+  include: apt-mirror.yml
+  tags: apt-mirror

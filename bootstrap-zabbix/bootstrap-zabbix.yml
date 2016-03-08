@@ -24,6 +24,14 @@
         - zabbix-frontend-php
         - python-mysqldb
 
+    - name: "Configure Zabbix"
+      copy:
+        dest: "/etc/zabbix/web/zabbix.conf.php"
+        src: "zabbix.conf.php"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+
     - name: "Create Zabbix database"
       mysql_db:
         name: "zabbix"
@@ -38,8 +46,16 @@
         login_user: "root"
         state: "present"
 
+    - name: "Upload initial schema and data"
+      copy:
+        dest: "/tmp/bootstrap-zabbix.sql"
+        src: "bootstrap-zabbix.sql"
+        owner: "root"
+        group: "root"
+        mode: "0644"
+
     - name: "Import initial schema and data"
-      shell: "zcat /usr/share/doc/zabbix-server-mysql/create.sql.gz | mysql -uroot zabbix"
+      shell: "cat /tmp/bootstrap-zabbix.sql | sed 's/__site_name__/{{ site_name }}/g' | mysql -uroot zabbix"
 
     - name: "Set Zabbix timezone"
       lineinfile:

@@ -1,0 +1,16 @@
+---
+- name: "apt-mirror : Create directories"
+  file:
+    dest: "{{ item }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+    state: "directory"
+  with_items:
+    - "/var/lib/nginx/apt-mirror"
+
+- name: "apt-mirror : Clone GIT project"
+  git:
+    dest: "/var/lib/nginx/apt-mirror"
+    repo: "{{ git_apt_mirror }}"
+    track_submodules: yes

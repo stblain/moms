@@ -4,7 +4,7 @@ d-i debian-installer/locale string en_CA
 ### Mirror settings
 d-i mirror/country string manual
 d-i mirror/http/hostname string {{ ansible_host }}
-d-i mirror/http/directory string /ubuntu
+d-i mirror/http/directory string /cdrom/ubuntu
 
 # Suite to install.
 d-i mirror/suite string trusty
@@ -63,7 +63,7 @@ d-i grub-installer/timeout string 2
 d-i finish-install/reboot_in_progress note
 
 ### Other
-d-i live-installer/net-image string http://{{ ansible_host }}/install/filesystem.squashfs
+d-i live-installer/net-image string http://{{ ansible_host }}/cdrom/install/filesystem.squashfs
 
 ### Post-install setup
 # Start ssh on boot

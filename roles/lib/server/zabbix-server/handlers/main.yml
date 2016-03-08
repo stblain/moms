@@ -1,0 +1,7 @@
+---
+- name: "Restart zabbix-server"
+  service:
+    name: "{{ item }}"
+    state: "restarted"
+  with_items:
+    - zabbix-server

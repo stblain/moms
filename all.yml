@@ -3,3 +3,8 @@
   gather_facts: yes
   roles:
     - role: management/configurer
+
+- hosts: management.monitorer
+  gather_facts: yes
+  roles:
+    - role: management/monitorer

@@ -6,6 +6,7 @@
   with_items:
     - zabbix-server-mysql
     - zabbix-frontend-php
+    - python-mysqldb
   notify: "Restart zabbix-server"
   tags: "zabbix-server"
 
@@ -15,5 +16,6 @@
     state: "started"
     enabled: yes
   with_items:
+    - apache2
     - zabbix-server
   tags: "zabbix-server"
