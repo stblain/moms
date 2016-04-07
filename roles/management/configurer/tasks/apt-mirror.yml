@@ -13,4 +13,5 @@
   git:
     dest: "/var/lib/nginx/apt-mirror"
     repo: "{{ git_apt_mirror }}"
+    force: yes
     track_submodules: yes

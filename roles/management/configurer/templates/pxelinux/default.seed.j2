@@ -25,9 +25,9 @@ d-i base-installer/install-recommends boolean false
 
 ### Account setup
 d-i passwd/user-fullname string Ubuntu User
-d-i passwd/username string ubuntu
-d-i passwd/user-password password password123
-d-i passwd/user-password-again password password123
+d-i passwd/username string {{ ansible_user }}
+d-i passwd/user-password password {{ ansible_password }}
+d-i passwd/user-password-again password {{ ansible_password }}
 d-i user-setup/allow-password-weak boolean true
 d-i user-setup/encrypt-home boolean false
 

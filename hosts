@@ -56,10 +56,25 @@ def do_list():
                                                               'auth': zabbix_auth_token,
                                                               },
                                             )
-            ansible_group['vars'].update(map(macro_to_var, zabbix_response.json()['result'][0]['macros']))
+            result_json = zabbix_response.json()['result']
+            ansible_group['vars'].update(map(macro_to_var, result_json[0]['macros']))
 
             # Add the group to the inventory
             inventory[group_name] = ansible_group
+
+    # Populate the variables of the all group
+    inventory['all'] = {'vars': {}}
+    zabbix_response = requests.post(ZABBIX_URL, json={'jsonrpc': "2.0",
+                                                          'method': "usermacro.get",
+                                                          'params': {'output': ["macro", "value"],
+                                                                     'globalmacro': True,
+                                                                     },
+                                                          'id': 0,
+                                                          'auth': zabbix_auth_token,
+                                                          },
+                                    )
+    result_json = zabbix_response.json()['result']
+    inventory['all']['vars'].update(map(macro_to_var, result_json))
 
     # Print the inventory
     print json.dumps(inventory, indent=4)
